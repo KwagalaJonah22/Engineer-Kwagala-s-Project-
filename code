@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>MediFinance | Hospital Payments & Salaries Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #eef2f9;
+      padding: 2rem 1.5rem;
+      color: #1a2c3e;
+    }
+
+    /* main container */
+    .dashboard {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* header & branding */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1.2rem 2rem;
+      border-radius: 32px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1f6e8c, #0e4e6b);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .logo p {
+      font-size: 0.8rem;
+      color: #5e7c97;
+      margin-top: 4px;
+    }
+
+    .date-badge {
+      background: #eaf4f8;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #1f6e8c;
+    }
+
+    /* stats cards row */
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      flex: 1;
+      min-width: 180px;
+      border-radius: 28px;
+      padding: 1.3rem 1.5rem;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+      border: 1px solid #e2edf2;
+    }
+
+    .stat-card h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6a8eaa;
+      margin-bottom: 0.6rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1a2c3e;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: #4f7a9b;
+      margin-top: 8px;
+      border-top: 1px dashed #e0ecf2;
+      padding-top: 6px;
+    }
+
+    /* two column layout: patients payments + doctors wages */
+    .split-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .panel {
+      flex: 1;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      border: 1px solid #e9f0f5;
+    }
+
+    .panel-header {
+      padding: 1.2rem 1.8rem;
+      border-bottom: 2px solid #eef3f8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      background: #fefefe;
+    }
+
+    .panel-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1f5e77;
+    }
+
+    .badge-count {
+      background: #dff0f7;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1a5d7a;
+    }
+
+    .add-form {
+      padding: 1rem 1.5rem;
+      background: #fafdff;
+      border-bottom: 1px solid #e9edf2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #547b99;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.6rem 0.7rem;
+      border-radius: 16px;
+      border: 1px solid #cfdfe8;
+      background: white;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #2c8eb3;
+      box-shadow: 0 0 0 2px rgba(44, 142, 179, 0.2);
+    }
+
+    button {
+      background: #267c9e;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: white;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background: #0f6688;
+      transform: scale(0.97);
+    }
+
+    .delete-all-btn {
+      background: #bc9a6c;
+      background: #b87c4f;
+    }
+    .delete-all-btn:hover {
+      background: #9c623b;
+    }
+
+    .list-container {
+      padding: 0.2rem 0.5rem 1rem 0.5rem;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .record-item {
+      background: #ffffff;
+      margin: 0.7rem 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      border: 1px solid #eef2f7;
+      transition: all 0.1s ease;
+    }
+
+    .record-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .record-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1c3f54;
+    }
+
+    .record-detail {
+      font-size: 0.75rem;
+      color: #658099;
+    }
+
+    .record-amount {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #1f6e8c;
+      letter-spacing: -0.2px;
+    }
+
+    .record-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #b88d7a;
+      padding: 0;
+      margin: 0;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 40px;
+      background: #faf0ec;
+      transition: 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #f3d9d0;
+      color: #c2441b;
+      transform: none;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 2rem;
+      color: #9bb7cc;
+      font-style: italic;
+    }
+
+    hr {
+      margin: 0.5rem 0;
+      border-color: #e5edf2;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: #6d8eab;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 1rem;
+      }
+      .panel-header {
+        flex-direction: column;
+        align-items: start;
+        gap: 8px;
+      }
+      .add-form {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .record-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="header">
+    <div class="logo">
+      <h1>🏥 MedFinance Tracker</h1>
+      <p>Patients payments | Doctors salaries & wages</p>
+    </div>
+    <div class="date-badge" id="liveDate"></div>
+  </div>
+
+  <!-- dynamic stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <h3>💰 Total patients payments</h3>
+      <div class="stat-value" id="totalPaymentsSum">$0</div>
+      <div class="stat-sub">all settled transactions</div>
+    </div>
+    <div class="stat-card">
+      <h3>👨‍⚕️ Total doctors wages</h3>
+      <div class="stat-value" id="totalSalariesSum">$0</div>
+      <div class="stat-sub">salaries + wages paid</div>
+    </div>
+    <div class="stat-card">
+      <h3>⚖️ Net balance</h3>
+      <div class="stat-value" id="netBalance">$0</div>
+      <div class="stat-sub">payments − salaries</div>
+    </div>
+    <div class="stat-card">
+      <h3>📋 Active records</h3>
+      <div class="stat-value" id="totalEntriesCount">0</div>
+      <div class="stat-sub">patients + doctors entries</div>
+    </div>
+  </div>
+
+  <!-- main split: patient payments & doctor salaries/wages -->
+  <div class="split-panel">
+    <!-- LEFT: Patients Payments -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>💵 Patients payments</h2>
+        <span class="badge-count" id="patientCountBadge">0 patients</span>
+      </div>
+      <div class="add-form">
+        <div class="form-group">
+          <label>Patient name</label>
+          <input type="text" id="patientName" placeholder="e.g., Sarah Johnson" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Amount ($)</label>
+          <input type="number" id="patientAmount" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label>Service / Dept</label>
+          <input type="text" id="patientDept" placeholder="Cardiology, etc.">
+        </div>
+        <button id="addPatientBtn">➕ Add payment</button>
+      </div>
+      <div class="list-container" id="patientListContainer">
+        <!-- dynamic patient list -->
+        <div class="empty-message">No patient payments recorded yet.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Doctors Salaries & Wages -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>🩺 Doctors salaries & wages</h2>
+        <span class="badge-count" id="doctorCountBadge">0 doctors</span>
+      </div>
+      <div class="add-form">
+        <div class="form-group">
+          <label>Doctor name</label>
+          <input type="text" id="doctorName" placeholder="e.g., Dr. Emily Chen" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Salary / wage ($)</label>
+          <input type="number" id="doctorSalary" placeholder="0.00" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+          <label>Specialty / Role</label>
+          <input type="text" id="doctorRole" placeholder="Surgeon, Pediatrician">
+        </div>
+        <button id="addDoctorBtn">➕ Add salary / wage</button>
+      </div>
+      <div class="list-container" id="doctorListContainer">
+        <div class="empty-message">No doctors wages added yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- global utility row -->
+  <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 0.5rem;">
+    <button id="resetAllData" class="delete-all-btn" style="background:#c06e4a;">🗑️ Reset all data</button>
+  </div>
+  <footer>
+    Hospital financial dashboard — track patient payments & staff wages in real time. Data stays in your browser (local storage).
+  </footer>
+</div>
+
+<script>
+  // ---------- Data Models ----------
+  let patients = [];     // each: { id, name, amount, department }
+  let doctors = [];      // each: { id, name, salary, specialty }
+
+  // Helper: generate simple UUID
+  function genId() {
+    return Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+  }
+
+  // Load from localStorage
+  function loadData() {
+    const storedPatients = localStorage.getItem('hospital_patients_payments');
+    const storedDoctors = localStorage.getItem('hospital_doctors_salaries');
+    if (storedPatients) {
+      try {
+        patients = JSON.parse(storedPatients);
+      } catch(e) { patients = []; }
+    } else {
+      // sample demo data for nicer initial experience
+      patients = [
+        { id: genId(), name: 'James Wilson', amount: 2450.00, department: 'Orthopedics' },
+        { id: genId(), name: 'Maria Gonzalez', amount: 1875.50, department: 'General Medicine' },
+        { id: genId(), name: 'Ahmed Riaz', amount: 3890.00, department: 'Cardiology' }
+      ];
+    }
+
+    if (storedDoctors) {
+      try {
+        doctors = JSON.parse(storedDoctors);
+      } catch(e) { doctors = []; }
+    } else {
+      doctors = [
+        { id: genId(), name: 'Dr. Lisa Mendes', salary: 12500.00, specialty: 'Cardiology' },
+        { id: genId(), name: 'Dr. Samuel Okonkwo', salary: 9800.50, specialty: 'Neurology' },
+        { id: genId(), name: 'Dr. Yuki Tanaka', salary: 11200.00, specialty: 'Pediatrics' }
+      ];
+    }
+  }
+
+  // Persist both collections
+  function persistData() {
+    localStorage.setItem('hospital_patients_payments', JSON.stringify(patients));
+    localStorage.setItem('hospital_doctors_salaries', JSON.stringify(doctors));
+  }
+
+  // ---------- Helper: Update all UI (stats, lists, badges) ----------
+  function updateAllUI() {
+    updateStatsAndCounters();
+    renderPatientList();
+    renderDoctorList();
+  }
+
+  function updateStatsAndCounters() {
+    // total patients payments sum
+    const totalPayments = patients.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const totalSalaries = doctors.reduce((sum, d) => sum + (d.salary || 0), 0);
+    const netBalance = totalPayments - totalSalaries;
+    const totalEntries = patients.length + doctors.length;
+
+    document.getElementById('totalPaymentsSum').innerText = `$${totalPayments.toFixed(2)}`;
+    document.getElementById('totalSalariesSum').innerText = `$${totalSalaries.toFixed(2)}`;
+    document.getElementById('netBalance').innerText = `$${netBalance.toFixed(2)}`;
+    document.getElementById('totalEntriesCount').innerText = totalEntries;
+
+    // badges
+    document.getElementById('patientCountBadge').innerText = `${patients.length} patient${patients.length !== 1 ? 's' : ''}`;
+    document.getElementById('doctorCountBadge').innerText = `${doctors.length} doctor${doctors.length !== 1 ? 's' : ''}`;
+  }
+
+  // Render patient payment list
+  function renderPatientList() {
+    const container = document.getElementById('patientListContainer');
+    if (!container) return;
+    if (patients.length === 0) {
+      container.innerHTML = `<div class="empty-message">💸 No patient payments recorded yet. Add the first payment.</div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+    patients.forEach(patient => {
+      const recordDiv = document.createElement('div');
+      recordDiv.className = 'record-item';
+      recordDiv.innerHTML = `
+        <div class="record-info">
+          <span class="record-name">🧾 ${escapeHtml(patient.name)}</span>
+          <span class="record-detail">${escapeHtml(patient.department || 'General')} • Payment ID: ${patient.id.slice(-6)}</span>
+        </div>
+        <div class="record-amount">$${(patient.amount || 0).toFixed(2)}</div>
+        <div class="record-actions">
+          <button class="delete-btn" data-id="${patient.id}" data-type="patient" title="Delete payment">🗑️</button>
+        </div>
+      `;
+      container.appendChild(recordDiv);
+    });
+
+    // attach delete events to patient delete buttons
+    document.querySelectorAll('.delete-btn[data-type="patient"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        deletePatientById(id);
+      });
+    });
+  }
+
+  // Render doctor list
+  function renderDoctorList() {
+    const container = document.getElementById('doctorListContainer');
+    if (!container) return;
+    if (doctors.length === 0) {
+      container.innerHTML = `<div class="empty-message">👨‍⚕️ No doctor salaries/wages added. Add a doctor entry.</div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+    doctors.forEach(doc => {
+      const recordDiv = document.createElement('div');
+      recordDiv.className = 'record-item';
+      recordDiv.innerHTML = `
+        <div class="record-info">
+          <span class="record-name">👩‍⚕️ ${escapeHtml(doc.name)}</span>
+          <span class="record-detail">${escapeHtml(doc.specialty || 'General Staff')} • Wage ID: ${doc.id.slice(-6)}</span>
+        </div>
+        <div class="record-amount">$${(doc.salary || 0).toFixed(2)}</div>
+        <div class="record-actions">
+          <button class="delete-btn" data-id="${doc.id}" data-type="doctor" title="Delete salary">🗑️</button>
+        </div>
+      `;
+      container.appendChild(recordDiv);
+    });
+
+    document.querySelectorAll('.delete-btn[data-type="doctor"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        deleteDoctorById(id);
+      });
+    });
+  }
+
+  // delete functions
+  function deletePatientById(id) {
+    patients = patients.filter(p => p.id !== id);
+    persistData();
+    updateAllUI();
+  }
+
+  function deleteDoctorById(id) {
+    doctors = doctors.filter(d => d.id !== id);
+    persistData();
+    updateAllUI();
+  }
+
+  // Add new patient payment
+  function addPatientPayment(name, amount, department) {
+    if (!name || name.trim() === "") {
+      alert("Please enter patient name");
+      return false;
+    }
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount < 0) {
+      alert("Please enter a valid payment amount (positive number)");
+      return false;
+    }
+    const deptValue = (department && department.trim() !== "") ? department.trim() : "Clinic";
+    const newPatient = {
+      id: genId(),
+      name: name.trim(),
+      amount: numericAmount,
+      department: deptValue
+    };
+    patients.push(newPatient);
+    persistData();
+    updateAllUI();
+    return true;
+  }
+
+  // Add doctor salary/wage
+  function addDoctorSalary(name, salaryAmount, specialty) {
+    if (!name || name.trim() === "") {
+      alert("Please enter doctor's name");
+      return false;
+    }
+    const numericSalary = parseFloat(salaryAmount);
+    if (isNaN(numericSalary) || numericSalary < 0) {
+      alert("Please enter a valid salary / wage amount (positive number)");
+      return false;
+    }
+    const specValue = (specialty && specialty.trim() !== "") ? specialty.trim() : "General Medicine";
+    const newDoctor = {
+      id: genId(),
+      name: name.trim(),
+      salary: numericSalary,
+      specialty: specValue
+    };
+    doctors.push(newDoctor);
+    persistData();
+    updateAllUI();
+    return true;
+  }
+
+  // reset all data (clear both arrays)
+  function resetAllData() {
+    if (confirm("⚠️ Reset all patient payments AND doctor wages? This action cannot be undone.")) {
+      patients = [];
+      doctors = [];
+      persistData();
+      updateAllUI();
+    }
+  }
+
+  // simple XSS prevention
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+
+  // show live date
+  function updateDateBadge() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const dateElem = document.getElementById('liveDate');
+    if (dateElem) dateElem.innerText = now.toLocaleDateString(undefined, options);
+  }
+
+  // --- Event listeners on DOM ready ---
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();            // load from localStorage or default demo
+    updateAllUI();
+    updateDateBadge();
+
+    // Add patient button
+    const addPatientBtn = document.getElementById('addPatientBtn');
+    if (addPatientBtn) {
+      addPatientBtn.addEventListener('click', () => {
+        const nameInput = document.getElementById('patientName');
+        const amountInput = document.getElementById('patientAmount');
+        const deptInput = document.getElementById('patientDept');
+        const success = addPatientPayment(nameInput.value, amountInput.value, deptInput.value);
+        if (success) {
+          nameInput.value = '';
+          amountInput.value = '';
+          deptInput.value = '';
+        }
+      });
+    }
+
+    // Add doctor button
+    const addDoctorBtn = document.getElementById('addDoctorBtn');
+    if (addDoctorBtn) {
+      addDoctorBtn.addEventListener('click', () => {
+        const nameInput = document.getElementById('doctorName');
+        const salaryInput = document.getElementById('doctorSalary');
+        const roleInput = document.getElementById('doctorRole');
+        const success = addDoctorSalary(nameInput.value, salaryInput.value, roleInput.value);
+        if (success) {
+          nameInput.value = '';
+          salaryInput.value = '';
+          roleInput.value = '';
+        }
+      });
+    }
+
+    // Reset all button
+    const resetBtn = document.getElementById('resetAllData');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetAllData);
+    }
+
+    // optional: allow Enter key on some inputs? not necessary but convenient, not critical.
+    const handleEnter = (e, callback) => { if (e.key === 'Enter') callback(); };
+    document.getElementById('patientAmount')?.addEventListener('keypress', (e) => handleEnter(e, () => addPatientBtn.click()));
+    document.getElementById('patientName')?.addEventListener('keypress', (e) => handleEnter(e, () => addPatientBtn.click()));
+    document.getElementById('doctorSalary')?.addEventListener('keypress', (e) => handleEnter(e, () => addDoctorBtn.click()));
+    document.getElementById('doctorName')?.addEventListener('keypress', (e) => handleEnter(e, () => addDoctorBtn.click()));
+  });
+</script>
+</body>
+</html>
